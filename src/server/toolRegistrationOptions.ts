@@ -3,6 +3,7 @@ import {
   type ToolContract,
   type ToolFamilyMeta,
 } from "../contracts/toolContractTypes.js";
+import { toolFamilyId } from "../contracts/toolFamilies.js";
 import type { StandardSchemaWithJSON } from "@modelcontextprotocol/server";
 import {
   toolInputSchemaWithMetadata,
@@ -19,14 +20,19 @@ export const toolRegistrationOptions = <Contract extends ToolContract>(
   readonly outputSchema: Contract["outputSchema"];
   readonly annotations: Contract["annotations"];
   readonly _meta: ToolFamilyMeta;
-} => ({
-  title: contract.title,
-  description: contract.description,
-  inputSchema: toolInputSchemaWithMetadata(contract),
-  outputSchema: toolOutputSchemaWithMetadata(contract),
-  annotations: contract.annotations,
-  _meta: { [REA_MCP_META_KEY]: { family: contract.kind } },
-});
+} => {
+  const family = toolFamilyId(contract.name);
+  if (family === undefined)
+    throw new Error(`Tool ${contract.name} belongs to no published family`);
+  return {
+    title: contract.title,
+    description: contract.description,
+    inputSchema: toolInputSchemaWithMetadata(contract),
+    outputSchema: toolOutputSchemaWithMetadata(contract),
+    annotations: contract.annotations,
+    _meta: { [REA_MCP_META_KEY]: { family } },
+  };
+};
 
 /** Register a workflow that validates raw input before effects and projects its own errors. */
 export const applicationToolRegistrationOptions = <

@@ -1,3 +1,4 @@
+import type { ToolFamilyId } from "./toolFamilyIds.js";
 import type { z } from "zod";
 
 import type { JsonValue } from "../domain/jsonValue.js";
@@ -39,11 +40,11 @@ export const REA_MCP_META_KEY = "io.github.morluto/rea";
 /**
  * Family advertised on each `tools/list` entry under {@link REA_MCP_META_KEY}
  * so lazy-indexing clients can group tools without name heuristics. The value
- * is the contract's `kind`, which `binary_session` also reports as
- * `tool_availability.groups.surface` with complete detail.
+ * is the selectable family id from `toolFamilyIds.ts`, the vocabulary that
+ * `REA_MCP_TOOL_FAMILIES` and `rea setup --tool-families` accept.
  */
 export type ToolFamilyMeta = {
-  readonly [REA_MCP_META_KEY]: { readonly family: ToolKind };
+  readonly [REA_MCP_META_KEY]: { readonly family: ToolFamilyId };
 };
 
 /** Single source of truth for a public MCP tool. */
